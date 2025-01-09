@@ -69,4 +69,12 @@ task vendor {
     }
 }
 
+task localGem(dependsOn: vendor) {
+    doLast {
+        exec {
+            commandLine "gem", "build", "logstash-filter-embeddings_generator.gemspec"
+        }
+    }
+}
+
 vendor.dependsOn(jar, generateGemJarRequiresFile)

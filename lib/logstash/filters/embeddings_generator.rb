@@ -16,7 +16,7 @@ class LogStash::Filters::EmbeddingsGenerator < LogStash::Filters::Base
   #     note that engine params can be configured through ENV var or jvm.options
   #     https://docs.djl.ai/master/docs/development/inference_performance_optimization.html
   #     https://github.com/deepjavalibrary/djl/blob/master/api/src/main/java/ai/djl/engine/Engine.java#L82-L83
-  #   make model (ex: all-MiniLM-L6-v2) and AI community (huggingface) configurable
+  #   make model (ex: all-MiniLM-L6-v2) and LLM community (huggingface) configurable
   #   make target run H/W configurable: (CPU | GPU)
 
   attr_reader :generator
@@ -36,8 +36,6 @@ class LogStash::Filters::EmbeddingsGenerator < LogStash::Filters::Base
     #   for now to get to know all exceptions, not handling them
     #   event.get(@source) should be String class
     #   event.get(@source) should not be nil or empty
-    message = event.get(@source)
-    puts "Message class: #{message.class}"
     embeddings = @generator.getEmbeddings(event.get(@source))
     event.set(@target, embeddings)
   end
