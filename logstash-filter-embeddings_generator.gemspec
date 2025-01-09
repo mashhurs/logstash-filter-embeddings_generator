@@ -13,7 +13,14 @@ Gem::Specification.new do |s|
   s.platform       = 'java'
 
   # Files
-  s.files = Dir['lib/**/*','spec/**/*','vendor/**/*','*.gemspec','*.md','CONTRIBUTORS','Gemfile','LICENSE','NOTICE.TXT']
+  s.files = Dir[*%w{
+    lib/**/*.*
+    *.gemspec
+    vendor/jar-dependencies/**/*.jar
+    VERSION
+    LICENSE.md
+    NOTICE.txt
+  }]
    # Tests
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
