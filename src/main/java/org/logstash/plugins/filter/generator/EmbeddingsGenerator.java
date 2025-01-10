@@ -18,8 +18,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EmbeddingsGenerator {
 
@@ -30,16 +32,21 @@ public class EmbeddingsGenerator {
     public EmbeddingsGenerator(final String path, final String modelName) throws ModelNotFoundException, MalformedModelException, IOException {
         logger.info("Using PyTorch engine.");
         logger.info("Using " + path + " path.");
-        logger.info("Using " + modelName + " model.");
 
-        final String modelUrl = path.concat("/").concat(modelName);
-        Criteria<String, float[]> criteria =
-                Criteria.builder()
-                        .setTypes(String.class, float[].class)
-                        .optModelUrls(modelUrl)
-                        .optEngine("PyTorch")
-                        .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
-                        .build();
+        Criteria.Builder<String, float[]> criteriaBuilder = Criteria.builder()
+                .setTypes(String.class, float[].class)
+                .optEngine("PyTorch")
+                .optTranslatorFactory(new TextEmbeddingTranslatorFactory());
+
+        if (Objects.isNull(modelName)) {
+            criteriaBuilder.optModelPath(Paths.get(path));
+        } else {
+            logger.info("Using " + modelName + " model.");
+            final String modelUrl = path.concat("/").concat(modelName);
+            criteriaBuilder.optModelUrls(modelUrl);
+        }
+
+        Criteria<String, float[]> criteria = criteriaBuilder.build();
 
         logger.info("Loading a model.");
         ZooModel<String, float[]> model = criteria.loadModel();
@@ -50,7 +57,9 @@ public class EmbeddingsGenerator {
 
     private static final List<Float> result = new ArrayList<>();
     synchronized public List<Float> getEmbeddings(String text) throws TranslateException {
+        logger.info("Started to generate embeddings for the input text");
         float[] data = predictor.predict(text);
+        logger.info("Embeddings size: " + data.length);
         // TODO: temporary cast to align with Logstash Valuefier.Converter
         result.clear();
         for (float datum : data) {
