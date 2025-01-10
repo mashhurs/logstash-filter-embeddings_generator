@@ -19,7 +19,9 @@ public class EmbeddingsGeneratorTest {
 
     @Before
     public void setUp() throws ModelNotFoundException, MalformedModelException, IOException {
-        generator = new EmbeddingsGenerator();
+        final String path = "djl://ai.djl.huggingface.pytorch";
+        final String model = "sentence-transformers/all-MiniLM-L6-v2";
+        generator = new EmbeddingsGenerator(path, model);
     }
 
     @Test

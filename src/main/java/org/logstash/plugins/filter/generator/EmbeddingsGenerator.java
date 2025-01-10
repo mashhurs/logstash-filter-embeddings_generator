@@ -23,21 +23,20 @@ import java.util.List;
 
 public class EmbeddingsGenerator {
 
-    private static final String DJL_MODEL = "sentence-transformers/all-MiniLM-L6-v2";
-    private static final String DJL_PATH = "djl://ai.djl.huggingface.pytorch/" + DJL_MODEL;
-
     private final static Logger logger = LogManager.getLogger(EmbeddingsGenerator.class);
 
     private static Predictor<String, float[]> predictor;
 
-    public EmbeddingsGenerator() throws ModelNotFoundException, MalformedModelException, IOException {
+    public EmbeddingsGenerator(final String path, final String modelName) throws ModelNotFoundException, MalformedModelException, IOException {
         logger.info("Using PyTorch engine.");
-        logger.info("Using " + DJL_MODEL + " model.");
+        logger.info("Using " + path + " path.");
+        logger.info("Using " + modelName + " model.");
 
+        final String modelUrl = path.concat("/").concat(modelName);
         Criteria<String, float[]> criteria =
                 Criteria.builder()
                         .setTypes(String.class, float[].class)
-                        .optModelUrls(DJL_PATH)
+                        .optModelUrls(modelUrl)
                         .optEngine("PyTorch")
                         .optTranslatorFactory(new TextEmbeddingTranslatorFactory())
                         .build();

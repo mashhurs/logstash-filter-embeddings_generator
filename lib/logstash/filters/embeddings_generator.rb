@@ -17,6 +17,10 @@ class LogStash::Filters::EmbeddingsGenerator < LogStash::Filters::Base
   config :source, :validate => :string, :default => "message"
   config :target, :validate => :string, :default => "embeddings"
 
+  # huggingface pytorch
+  config :path, :validate => :string, :default => "djl://ai.djl.huggingface.pytorch"
+  config :model_name, :validate => :string, :default => "sentence-transformers/all-MiniLM-L6-v2"
+
   java_import 'org.logstash.plugins.filter.generator.EmbeddingsGenerator'
 
   # TODO:
@@ -31,11 +35,14 @@ class LogStash::Filters::EmbeddingsGenerator < LogStash::Filters::Base
 
   public
   def register
-    @generator = EmbeddingsGenerator.new
-    fail "Failed to create a new EmbeddingsGenerator" if @generator.nil?
+    fail "`source` param cannot be null or empty" if @source.empty?
+    fail "`target` param cannot be null or empty" if @target.empty?
 
-    fail "source param cannot be null or empty" if @source.empty?
-    fail "target param cannot be null or empty" if @target.empty?
+    fail "`path` cannot be null or empty" if @path.nil? || @path.empty?
+    fail "`model_name` cannot be null or empty" if @model_name.nil? || @model_name.empty?
+
+    @generator = EmbeddingsGenerator.new(@path, @model_name)
+    fail "Failed to create a new EmbeddingsGenerator" if @generator.nil?
   end
 
   public
