@@ -18,6 +18,14 @@ class LogStash::Filters::EmbeddingsGenerator < LogStash::Filters::Base
   config :target, :validate => :string, :default => "embeddings"
 
   # `path` cane be local model, remote full path or base (example: huggingface pytorch) URL
+  #  Examples:
+  #   path => "djl://ai.djl.huggingface.pytorch"                # from huggingdface
+  #   model_name => "BAAI/bge-small-en-v1.5"                    # dimension 384
+  #   model_name => "sentence-transformers/all-MiniLM-L6-v2"    # dimension 384
+  #   model_name => "eeeyounglee/EEVE-10.8B-mean-4096-4"        # DJL doesn't support by default, need conversion
+  #   download EEVE-10.8B-mean-4096-4 from huggingface and convert into torchscript format
+  #   then point to local model
+  #   path => "/path-to-local/model/EEVE-10.8B-mean-4096-4"
   config :path, :validate => :string
   config :model_name, :validate => :string
 
